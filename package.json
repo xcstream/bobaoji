@@ -1,7 +1,7 @@
 {
   "name": "bobaoji",
-  "version": "1.0.2",
-  "description": "bilibili danmu reader",
+  "version": "1.0.4",
+  "description": "床床弹幕播报鸡",
   "bin": "index.js",
   "main": "index.js",
   "scripts": {

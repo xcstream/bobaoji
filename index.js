@@ -5,6 +5,9 @@ const process = require('process')
 let tts = null
 const { KeepLiveWS } = require('bilibili-live-ws')
 const spawn = require('child_process').spawn;
+const package = require('./package.json')
+
+console.log(`${package.description} ver${package.version}`)
 
 let history = []
 if(process.platform.indexOf('win') === 0 ){
@@ -100,8 +103,8 @@ var arguments = process.argv.splice(2);
 
 let roomid = arguments[0]
 
-if (parseInt(roomid) == NaN){
-    console.log('不正确的房间号')
+if ( !( parseInt(roomid) > 0)) {
+    console.log('不正确的房间号:'+ roomid)
     process.exit(1)
 }
 
