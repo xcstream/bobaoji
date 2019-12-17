@@ -50,8 +50,6 @@ if(process.platform.indexOf('darwin') === 0 ){
 }
 
 
-////say///
-
 const chalk = require('chalk')
 var fetch = require('node-fetch')
 
@@ -101,6 +99,14 @@ bobaoji [房间号] [选项...]
 var arguments = process.argv.splice(2);
 
 let roomid = arguments[0]
+
+if (parseInt(roomid) == NaN){
+    console.log('不正确的房间号')
+    process.exit(1)
+}
+
+
+
 
 for (let i of arguments){
     if(i == '-h') {
@@ -222,7 +228,7 @@ async function connect(){
             if(global.nosilver && type == '(银瓜子)') return
             if(global.nolatiao && gift == '辣条') return
             tts(textr)
-            
+
         }
     })
     return true
