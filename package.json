@@ -1,7 +1,7 @@
 {
   "name": "bobaoji",
   "version": "1.0.2",
-  "description": "",
+  "description": "bilibili danmu reader",
   "bin": "index.js",
   "main": "index.js",
   "scripts": {
