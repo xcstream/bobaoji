@@ -1,42 +1,54 @@
 #!/usr/bin/env node
 const process = require('process')
 
-if(process.platform.indexOf('win') == -1){
-    console.log('目前只支持windows')
-    process.exit(1)
-}
 
-
+let tts = null
 const { KeepLiveWS } = require('bilibili-live-ws')
+const spawn = require('child_process').spawn;
 
-/////////say
-var iconv = require('iconv-lite');
-var spawn = require('child_process').spawn;
-var proc = spawn('powershell');
-var cmd = `
-$sapi = New-Object -COM Sapi.SpVoice
-`
-let encoded = iconv.encode(cmd, 'gbk');
-proc.stdin.write(encoded); // 写入数据
-
-var history = []
-
-function say(text) {
-    history.unshift(text)
-    if( history[0] == history[1]  && history[1]== history[2] ){
-        return
-    }
-    if(history.length>10000){
-        history = []
-    }
-    text = text.replace(/"/g,"");
-    var cmd =  `$sapi.Speak("${text}")\n`
+let history = []
+if(process.platform.indexOf('win') === 0 ){
+    var iconv = require('iconv-lite');
+    var proc = spawn('powershell');
+    var cmd = `
+    $sapi = New-Object -COM Sapi.SpVoice
+    `
     let encoded = iconv.encode(cmd, 'gbk');
-    proc.stdin.write(encoded);
+    proc.stdin.write(encoded); // 写入数据
+
+    function say(text) {
+        history.unshift(text)
+        if( history[0] == history[1]  && history[1]== history[2] ){
+            return
+        }
+        if(history.length>10000){
+            history = []
+        }
+        text = text.replace(/"/g,"");
+        var cmd =  `$sapi.Speak("${text}")\n`
+        let encoded = iconv.encode(cmd, 'gbk');
+        proc.stdin.write(encoded);
+    }
+    tts = say
+}
+if(process.platform.indexOf('darwin') === 0 ){
+    var proc = spawn('sh');
+
+    function say(text) {
+        history.unshift(text)
+        if( history[0] == history[1]  && history[1]== history[2] ){
+            return
+        }
+        if(history.length>10000){
+            history = []
+        }
+        text = text.replace(/"/g,"");
+        var cmd =  `say "${text}"\n`
+        proc.stdin.write(cmd);
+    }
+    tts = say
 }
 
-
-let wintts = say
 
 ////say///
 
@@ -97,7 +109,7 @@ for (let i of arguments){
     }
 
     if(i == '--silent') {
-        wintts = function(){}
+        tts = function(){}
         console.log('设置: 关闭语音 ')
     }
 
@@ -184,7 +196,7 @@ async function connect(){
             var text = chalk.yellow(name) + '说' + chalk.green(content)
             var textr= name + '说' + content
             console.log(chalk.gray(timestamp())+text)
-            wintts(textr)
+            tts(textr)
 
         }
     })
@@ -209,7 +221,7 @@ async function connect(){
             if(global.nogift) return 
             if(global.nosilver && type == '(银瓜子)') return
             if(global.nolatiao && gift == '辣条') return
-            wintts(textr)
+            tts(textr)
             
         }
     })
